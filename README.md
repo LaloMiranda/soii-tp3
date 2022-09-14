@@ -9,34 +9,69 @@ El avance del hardare por sobre el sofware ha generado un gap que continúa en c
 El objetivo del presente laboratorio es que los Estudiantes aprendan algunas técnicas de optimización de código, con el objetivo de que los trabajos tengan mejor performance y consuman menores recorsos.
 
 ## Desarrollo
-### Problema a resolver
-Dado el archibo lab3.c en el presente repo, se pide que el estudiante lo analice, estudie y le realice toda tardea de optimización y refactorización que considere para que el software sea mas óptimo en consumo de recursos.
+### Primera ejecución
+Al momento de ejecutar por primera vez el programa original encontré que este realizaba un *core dump* ya que los bucles dentro de la función print se exedían de los limites de XDIM e YDIM. Tras solucionar esto obtuve el siguiente tiempo de ejecución:
 
-Se le debe medir y documentar las optimizaciones realizadas utilizando alguna herramienta de profiling y usando como base el software tal ocmo esta presentado.
+| Herramienta   | lab original  | lab modificado    |
+|---------------|---------------|-------------------|
+|time           | 36.872s       | 37.530s           |
 
-Extra: Debe diseñar y desarrollar un unit test que valide el software (NO usando un framework, sólo un script).
+### Primera modificacion
+Para comenzar con el trabajo era necesario elegir una herramienta de profiling, en mi caso utilicé GPROF. Gprof es una de las herramientas mas utilizadas en el rubro debido a su fácil uso y su sencilla instalación. Con esto ya instalado y funcionando modifique el archivo *lab3_modificado* de la siguiente manera:
 
-### Restricciones
-- Se puede utilizar tanto GCC u otro compilador
-- La compilación debe realizarse sin [optimizaciones de compilación (-O0)](https://gcc.gnu.org/onlinedocs/gcc/Optimize-Options.html)
-- No se debe limitar a las técnicas presentadas en clase.
+```diff
+void compute()
+...
+-double dato, accum;
+-int i, j, k, l;
+-for (i = 0; i < XDIM - 1; i++)
+-    for (j = 0; j < YDIM - 1; j++)
+-    {
+-        //fprintf(outFile, "array[%d][%d] = %f\n", i, j, arr[i][j]);
+-        if (i >= 1 && j >= 1 && i < XDIM - 1 && j < YDIM - 1)
+-        {
+-            for (k = 0; k < 3; k++)
+-                for (l = 0; l < 3; l++)
+-                {
+-                    int x = i + (l - 1);
+-                    int y = j + (k - 1);
+-                    dato = arr[x][y];
+-                    tmp_sum[l * 3 + k] = 2 * (2 * kern[l][k] * dato) / 1000 + 1;
+-                }
+-            accum = 0;
+-            for (k = 0; k < 3; k++)
+-                for (l = 0; l < 3; l++)
+-                    accum = accum + tmp_sum[k * 3 + l]; // 0 1 2  3 4 5  6 7 8
+-        }
+-        arr[i][j] = accum;
+-    }
 
-### Criterios de Corrección
-- Se debe compilar el código con los flags de compilación: 
-     -Wall -Pedantic -Werror -Wextra -Wconversion -std=gnu11
-- La correcta gestion de memoria.
-- Dividir el código en módulos de manera juiciosa.
-- Estilo de código.
-- Manejo de errores
-- El código no debe contener errores, ni warnings.
-- El código no debe contener errores de cppcheck.
++double accum;
++int i, j, k;
++for (i = 1; i < XDIM - 1; i++){
++    for (j = 1; j < YDIM - 1; j++){
++        accum = 0;
++        for (k = 0; k < 3; k++){
++            int y = j + (k - 1);
++            tmp_sum[k]      = 2 * (2 * kern[0][k] * arr[i - 1][y]) / 1000 + 1;
++            tmp_sum[k + 3]  = 2 * (2 * kern[1][k] * arr[i][y]) / 1000 + 1;
++            tmp_sum[k + 6]  = 2 * (2 * kern[2][k] * arr[i + 1][y]) / 1000 + 1;
++
++            accum += tmp_sum[k * 3] + tmp_sum[k * 3 + 1] + tmp_sum[k * 3 + 2];
++        }
++    arr[i][j] = accum;
++    }
++}
+```
+Se eliminaron los bucles que utilizaban la variable **L** como iterador y se quito el último bucle de la función (que usaba la vairable **K**) y se lo coloco dentro del bucle principal.
 
-## Entrega
-La entrega se hace a travéz del repositorio de GitHub y se deberá demostrar la realizacion del mismo mediante un correcto uso. El repositorio deberá proveer los archivos fuente y cualquier otro archivo asociados a la compilación, archivos  de  proyecto  ”Makefile”  y  el  código correctamente documentado. No debe contener ningún archivo asociado a proyectos de un IDE y se debe asumir que el proyecto podrá ser compilado y corrido por una `tty` en una distribución de Linux con las herramientas típicas de desarrollo. También se deberá entregar un informe en formato _Markdown_ documentando cada cambio que se le realiza al código, que efecto produce sobre el mismo y porqué?
-También se deberá investigar acerca de qué utilidades de profiling gratuitas existen y que brinda cada una (un capítulo del informe), optando por una para realizar las mediciones de tiempo de ejecución de la aplicación diseñada.
+Tiempos de ejecución:
+| Herramienta       | lab original  | lab modificado    |
+|---------------    |---------------|-------------------|
+|gprof - f(compute) | 5.47s         | 3.52s             |
 
-El informe debe contener gráficos y análisis de comparación entre la ejecución procedural y la distribuida. El informe además debe contener el diseño de la solución y la comparativa de profilers.
+Reducción de tiempo aproximada para esa función: 35,6%
 
-## Evaluación
-El presente trabajo práctico es individual y deberá entregarse antes de las 23:50ART del día 21 de Abril de 2022 dejando asentado en el LEV con el archivo de ifnorme. 
-
+***
+## Referencias
+- [How to create a diff in Markdown](https://egghead.io/lessons/egghead-create-a-diff-in-markdown-to-show-what-has-changed-in-a-code-snippet)

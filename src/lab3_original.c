@@ -39,8 +39,8 @@ void compute(double **arr, int kern[3][3])
     double tmp_sum[9];
     double dato, accum;
     int i, j, k, l;
-    for (i = 0; i < XDIM; i++)
-        for (j = 0; j < YDIM; j++)
+    for (i = 0; i < XDIM - 1; i++)
+        for (j = 0; j < YDIM - 1; j++)
         {
             //fprintf(outFile, "array[%d][%d] = %f\n", i, j, arr[i][j]);
             if (i >= 1 && j >= 1 && i < XDIM - 1 && j < YDIM - 1)
