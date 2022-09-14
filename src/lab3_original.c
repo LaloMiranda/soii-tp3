@@ -66,8 +66,8 @@ void compute(double **arr, int kern[3][3])
 void print(double **arr)
 {
     int i, j;
-    for (i = 0; i < XDIM; i++)
-        for (j = 0; j < YDIM; j++)
+    for (i = 0; i < XDIM- 1; i++)
+        for (j = 0; j < YDIM - 1; j++)
             fprintf(outFile, "array[%d][%d] = %f\n", i, j, arr[i][j]);
 }
 
