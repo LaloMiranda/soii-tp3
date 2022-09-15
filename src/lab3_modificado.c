@@ -38,7 +38,6 @@ void fill(double **arr)
 
 void compute(double **arr, int kern[3][3])
 {
-    double tmp_sum[9];
     double accum;
     int i, j, k;
     for (i = 0; i < XDIM - 1; i++){
@@ -47,13 +46,9 @@ void compute(double **arr, int kern[3][3])
                 accum = 0;
                 for (k = 0; k < 3; k++){
                     int y = j + (k - 1);
-                    tmp_sum[k]      = kern[0][k] * arr[i - 1][y] / 250 + 1;
-                    tmp_sum[k + 3]  = kern[1][k] * arr[i][y] / 250 + 1;
-                    tmp_sum[k + 6]  = kern[2][k] * arr[i + 1][y] / 250 + 1;
-
-                    accum += tmp_sum[k * 3] + tmp_sum[k * 3 + 1] + tmp_sum[k * 3 + 2];
+                    accum += kern[0][k] * arr[i - 1][y] + kern[1][k] * arr[i][y] + kern[2][k] * arr[i + 1][y];
                 }
-            arr[i][j] = accum;
+            arr[i][j] = accum / 250 + 9;
             continue;
             }
             else{

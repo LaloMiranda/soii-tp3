@@ -16,7 +16,7 @@ Al momento de ejecutar por primera vez el programa original encontré que este r
 |---------------|---------------|-------------------|
 |time           | 36.872s       | 37.530s           |
 
-### Primera modificacion
+### Primera modificación
 Para comenzar con el trabajo era necesario elegir una herramienta de profiling, en mi caso utilicé GPROF. Gprof es una de las herramientas mas utilizadas en el rubro debido a su fácil uso y su sencilla instalación. Con esto ya instalado y funcionando modifique el archivo *lab3_modificado* de la siguiente manera:
 
 ```diff
@@ -71,6 +71,70 @@ Tiempos de ejecución:
 |gprof - f(compute) | 5.47s         | 3.52s             |
 
 Reducción de tiempo aproximada para esa función: 35,6%
+
+### Segunda modificación
+Se arrego un error en el que los valores exteriores no eran de valor 0, para esto se volvio a agregar el condicional que estaba dentro del bucle anidado.
+```diff
+void compute()
+...
+double accum;
+int i, j, k;
+for (i = 0; i < XDIM - 1; i++){
+    for (j = 0; j < YDIM - 1; j++){
++        if (i >= 1 && j >= 1 && i < XDIM - 1 && j < YDIM - 1){
+            accum = 0;
+            for (k = 0; k < 3; k++){
+                int y = j + (k - 1);
+                tmp_sum[k]      = 2 * (2 * kern[0][k] * arr[i - 1][y]) / 1000 + 1;
+                tmp_sum[k + 3]  = 2 * (2 * kern[1][k] * arr[i][y]) / 1000 + 1;
+                tmp_sum[k + 6]  = 2 * (2 * kern[2][k] * arr[i + 1][y]) / 1000 + 1;
+
+                accum += tmp_sum[k * 3] + tmp_sum[k * 3 + 1] + tmp_sum[k * 3 + 2];
+            }
+        arr[i][j] = accum / 250 + 9;
+        continue;
+        }
++        else{
++            arr[i][j] = 0;
++        }
+```
+
+### Tercera modificación
+El cálculo del acumulador ya no se hace en dos partes ya que se elimino el array **tmp_sum**. Además, el proceso de normalización ahora se hace al momento de asignar el valor que corresponde al array y no en 9 pasos como se estaba haciendo anteriormente:
+```diff
+void compute()
+...
+double accum;
+int i, j, k;
+for (i = 0; i < XDIM - 1; i++){
+    for (j = 0; j < YDIM - 1; j++){
+        if (i >= 1 && j >= 1 && i < XDIM - 1 && j < YDIM - 1){
+            accum = 0;
+            for (k = 0; k < 3; k++){
+                int y = j + (k - 1);
+-                tmp_sum[k]      = 2 * (2 * kern[0][k] * arr[i - 1][y]) / 1000 + 1;
+-                tmp_sum[k + 3]  = 2 * (2 * kern[1][k] * arr[i][y]) / 1000 + 1;
+-                tmp_sum[k + 6]  = 2 * (2 * kern[2][k] * arr[i + 1][y]) / 1000 + 1;
+
+-                accum += tmp_sum[k * 3] + tmp_sum[k * 3 + 1] + tmp_sum[k * 3 + 2];
+
+-            }
+-        arr[i][j] = accum / 250 + 9;
++                accum += kern[0][k] * arr[i - 1][y] + kern[1][k] * arr[i][y] + kern[2][k] * arr[i + 1][y];
++            }
++        arr[i][j] = accum / 250 + 9;
+        continue;
+        }
+        else{
+            arr[i][j] = 0;
+        }
+```
+Tiempos de ejecución:
+| Herramienta       | lab original  | lab modificado #1 | lab modificado #3 |
+|---------------    |---------------|-------------------|-------------------|
+|gprof - f(compute) | 5.47s         | 3.52s             | 1.86s             |
+
+Esto nos da una diferencia del 52% referida a la iteración anterior.
 
 ***
 ## Referencias
