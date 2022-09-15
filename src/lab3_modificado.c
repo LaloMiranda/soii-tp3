@@ -41,18 +41,25 @@ void compute(double **arr, int kern[3][3])
     double tmp_sum[9];
     double accum;
     int i, j, k;
-    for (i = 1; i < XDIM - 1; i++){
-        for (j = 1; j < YDIM - 1; j++){
-            accum = 0;
-            for (k = 0; k < 3; k++){
-                int y = j + (k - 1);
-                tmp_sum[k]      = 2 * (2 * kern[0][k] * arr[i - 1][y]) / 1000 + 1;
-                tmp_sum[k + 3]  = 2 * (2 * kern[1][k] * arr[i][y]) / 1000 + 1;
-                tmp_sum[k + 6]  = 2 * (2 * kern[2][k] * arr[i + 1][y]) / 1000 + 1;
+    for (i = 0; i < XDIM - 1; i++){
+        for (j = 0; j < YDIM - 1; j++){
+            if (i >= 1 && j >= 1 && i < XDIM - 1 && j < YDIM - 1){
+                accum = 0;
+                for (k = 0; k < 3; k++){
+                    int y = j + (k - 1);
+                    tmp_sum[k]      = kern[0][k] * arr[i - 1][y] / 250 + 1;
+                    tmp_sum[k + 3]  = kern[1][k] * arr[i][y] / 250 + 1;
+                    tmp_sum[k + 6]  = kern[2][k] * arr[i + 1][y] / 250 + 1;
 
-                accum += tmp_sum[k * 3] + tmp_sum[k * 3 + 1] + tmp_sum[k * 3 + 2];
+                    accum += tmp_sum[k * 3] + tmp_sum[k * 3 + 1] + tmp_sum[k * 3 + 2];
+                }
+            arr[i][j] = accum;
+            continue;
             }
-        arr[i][j] = accum;
+            else{
+                arr[i][j] = 0;
+            }
+            
         }
     }
 }
