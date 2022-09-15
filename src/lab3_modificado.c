@@ -67,7 +67,7 @@ void print(double **arr)
 
 int main(void)
 {
-    outFile = fopen("./bin/printsOrigin.txt", "w+");
+    outFile = fopen("./bin/printsMod.txt", "w+");
     double **arr;
     int kern[3][3] = {{0, -1, 0}, {-1, 5, -1}, {0, -1, 0}};
 
