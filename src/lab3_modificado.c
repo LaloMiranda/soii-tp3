@@ -38,18 +38,13 @@ void fill(double **arr)
 
 void compute(double **arr, int kern[3][3])
 {
-    double accum;
-    int i, j, k;
-    for (i = 0; i < XDIM - 1; i++){
-        for (j = 0; j < YDIM - 1; j++){
+    int i, j;
+    for (i = 0; i < XDIM; i++){
+        for (j = 0; j < YDIM; j++){
             if (i >= 1 && j >= 1 && i < XDIM - 1 && j < YDIM - 1){
-                accum = 0;
-                for (k = 0; k < 3; k++){
-                    int y = j + (k - 1);
-                    accum += kern[0][k] * arr[i - 1][y] + kern[1][k] * arr[i][y] + kern[2][k] * arr[i + 1][y];
-                }
-            arr[i][j] = accum / 250 + 9;
-            continue;
+                arr[i][j] =(kern[0][0] * arr[i - 1][j - 1]     + kern[1][0] * arr[i][j - 1]    + kern[2][0] * arr[i + 1][j - 1] + 
+                            kern[0][1] * arr[i - 1][j]         + kern[1][1] * arr[i][j]        + kern[2][1] * arr[i + 1][j]     + 
+                            kern[0][2] * arr[i - 1][j  + 1]    + kern[1][2] * arr[i][j + 1]    + kern[2][2] * arr[i + 1][j + 1]) * 0.004 + 9;
             }
             else{
                 arr[i][j] = 0;

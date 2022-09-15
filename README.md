@@ -136,6 +136,31 @@ Tiempos de ejecución:
 
 Esto nos da una diferencia del 52% referida a la iteración anterior.
 
+### Cuarta modificación
+Fue eliminado el bucle que utilizaba la variable **K** dentro de los bucles anidados de I y J. Además la variable accum ya no es necesaria porque podemos asignar el valor acumulado directamente a la posición del array.
+```diff
+void compute()
+...
+if (i >= 1 && j >= 1 && i < XDIM - 1 && j < YDIM - 1){
+-    accum = 0;
+-    for (k = 0; k < 3; k++){
+-        int y = j + (k - 1);
+-        accum += kern[0][k] * arr[i - 1][y] + kern[1][k] * arr[i][y] + kern[2][k] * arr[i + 1][y];
+-    }
+-    arr[i][j] = accum / 250 + 9;
++    arr[i][j] =(kern[0][0] * arr[i - 1][j - 1]     + kern[1][0] * arr[i][j - 1]    + kern[2][0] * arr[i + 1][j - 1] + 
++                kern[0][1] * arr[i - 1][j]         + kern[1][1] * arr[i][j]        + kern[2][1] * arr[i + 1][j]     + 
++                kern[0][2] * arr[i - 1][j  + 1]    + kern[1][2] * arr[i][j + 1]    + kern[2][2] * arr[i + 1][j + 1]) * 0.004 + 9;
+}
+
+```
+Tiempos de ejecución:
+| Herramienta       | lab original  | lab modificado #1 | lab modificado #3 | lab modificado #4 |
+|---------------    |---------------|-------------------|-------------------|-------------------|
+|gprof - f(compute) | 5.47s         | 3.52s             | 1.86s             | 1.17s             |
+
+Esto nos da una diferencia del 37% referida a la iteración anterior.
+
 ***
 ## Referencias
 - [How to create a diff in Markdown](https://egghead.io/lessons/egghead-create-a-diff-in-markdown-to-show-what-has-changed-in-a-code-snippet)
