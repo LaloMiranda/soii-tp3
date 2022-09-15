@@ -161,6 +161,40 @@ Tiempos de ejecución:
 
 Esto nos da una diferencia del 37% referida a la iteración anterior.
 
+### Quinta modificación
+Los bucles for fueron reemplzados por bucles while.
+```diff
+- int XDIM = 10000
+- int YDIM = 10000
++ #define XDIM  10000
++ #define YDIM  10000
+
+void compute()
+...
+-int i, j;
+-for (i = 0; i < XDIM - 1; i++){
+-    for (j = 0; j < YDIM - 1; j++){
++int i = 0;
++int j = 0;
++while(i < XDIM){
++    j = 0;
++    while(j < YDIM){
+        ...
+-    }
+-}
++    j++;
++    }
++    i++;
++}
+
+```
+Tiempos de ejecución:
+| Herramienta       | lab original  | lab modificado #1 | lab modificado #3 | lab modificado #4 | lab modificado #5 |
+|---------------    |---------------|-------------------|-------------------|-------------------|-------------------|
+|gprof - f(compute) | 5.47s         | 3.52s             | 1.86s             | 1.17s             | 1.15s             |
+
+Esto nos da una diferencia del 2% referida a la iteración anterior.
+
 ***
 ## Referencias
 - [How to create a diff in Markdown](https://egghead.io/lessons/egghead-create-a-diff-in-markdown-to-show-what-has-changed-in-a-code-snippet)

@@ -4,8 +4,8 @@
 #include <math.h>
 #include <time.h>
 
-int XDIM = 10000;
-int YDIM = 10000;
+#define XDIM  10000
+#define YDIM  10000
 FILE *outFile;
 
 // We return the pointer
@@ -38,9 +38,11 @@ void fill(double **arr)
 
 void compute(double **arr, int kern[3][3])
 {
-    int i, j;
-    for (i = 0; i < XDIM; i++){
-        for (j = 0; j < YDIM; j++){
+    int i = 0;
+    int j = 0;
+    while(i < XDIM){
+        j = 0;
+        while(j < YDIM){
             if (i >= 1 && j >= 1 && i < XDIM - 1 && j < YDIM - 1){
                 arr[i][j] =(kern[0][0] * arr[i - 1][j - 1]     + kern[1][0] * arr[i][j - 1]    + kern[2][0] * arr[i + 1][j - 1] + 
                             kern[0][1] * arr[i - 1][j]         + kern[1][1] * arr[i][j]        + kern[2][1] * arr[i + 1][j]     + 
@@ -49,8 +51,9 @@ void compute(double **arr, int kern[3][3])
             else{
                 arr[i][j] = 0;
             }
-            
+            j++;
         }
+        i++;
     }
 }
 
